@@ -1,0 +1,26 @@
+{
+    "1234-abcd-5678-efgh": {
+        "name": "Jon",
+        "pin": "2468",
+        "accounts": {
+            "0000-1212": {"bank_name": "cool_bank", "balance": 0},
+            "1111-1313": {"bank_name": "cool_bank", "balance": 500}
+        }
+    },
+    "5678-abcd-9012-efgh": {
+        "name": "Tim",
+        "pin": "1356",
+        "accounts": {
+            "22-221414": {"bank_name": "hot_bank", "balance": 5},
+            "33-331515": {"bank_name": "hot_bank", "balance": 200}
+        }
+    },
+    "9012-abcd-3456-efgh": {
+        "name": "Mat",
+        "pin": "9980",
+        "accounts": {
+            "22-221616": {"bank_name": "cool_bank", "balance": 0},
+            "33-331717": {"bank_name": "cool_bank", "balance": 0}
+        }
+    }
+}
