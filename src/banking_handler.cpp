@@ -6,36 +6,61 @@ BankingHandler::BankingHandler()
 BankingHandler::~BankingHandler()
 {}
 
-bool BankingHandler::deposit_money(int & money) {
-    nlohmann::json json_data = load_json_db();
-    if (!loaded_data_.contains(card) ||
-        !loaded_data_[card]["accounts"].contains(acc)) {
-        std::cerr << "계좌를 찾을 수 없습니다\n";
+bool BankingHandler::deposit_or_withdraw(
+    const std::string & card_num,
+    const std::string & account,
+    const int & money)
+{
+    int current_balance = loaded_data_[card_num]["accounts"][account]["balance"].get<int>();
+    int new_balance = current_balance + money;
+    std::string print_out;
+    if (new_balance < 0) {
         return false;
     }
+    print_out += "Your current balance is '" + std::to_string(new_balance) + "$'. Returning to SELECT_MENU";
+    std::cout << print_out << std::endl;
+    nlohmann::json new_json = load_json_db();
+    new_json[card_num]["accounts"][account]["balance"] = new_balance;
+    dump_json(new_json);
+    loaded_data_ = load_json_db();
+    return true;
+}
 
-    // 잔액 수정
-    int current = loaded_data_[card]["accounts"][acc]["balance"].get<int>();
-    loaded_data_[card]["accounts"][acc]["balance"] = current + amount;
-
-    // 파일에 저장
-    std::ofstream file("local_db/card_account_db.json");
-    if (!file) {
-        std::cerr << "파일을 쓸 수 없습니다\n";
-        return false;
+bool BankingHandler::transfer_money(
+    const std::string & source_card_num,
+    const std::string & source_account,
+    const std::string & target_account,
+    const std::string & target_bank_name,
+    int & money)
+{
+    bool result = false;
+    int withdraw_money = 0 - money;
+    if (!this->deposit_or_withdraw(source_card_num, source_account, withdraw_money)) {
+        std::cerr << "Not enough money to transfer! Try different amount of money again." << std::endl;
+        return result;
     }
-    file << loaded_data_.dump(4);
-    return true;
+    for (auto & [card_num, item] : loaded_data_.items()) {
+        auto & accounts = item["accounts"];
+        if (accounts.contains(target_account) && accounts[target_account]["bank_name"] == target_bank_name) {
+            int balance = accounts[target_account]["balance"].get<int>();
+            int new_balance = balance + money;
+            accounts[target_account]["balance"] = new_balance;
+            
+            nlohmann::json new_json = load_json_db();
+            new_json[card_num]["accounts"][target_account]["balance"] = new_balance;
+            dump_json(new_json);
+            loaded_data_ = load_json_db();
+            result = true;
+            break;
+        }
+    }
+    return result;
 }
 
-bool BankingHandler::withdraw_money(int & money) {
-    return true;
+int BankingHandler::get_current_balance(const std::string & card_num, const std::string & account) {
+    return loaded_data_[card_num]["accounts"][account]["balance"].get<int>();
 }
 
-bool BankingHandler::transfer_money(int & money) {
-    return true;
-}
-
-int BankingHandler::balance_inquiry() {
-    return true;
+std::string BankingHandler::get_target_bank_name(const std::string & card_num, const std::string & account) {
+    return loaded_data_[card_num]["accounts"][account]["bank_name"].get<std::string>();
 }
