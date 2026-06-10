@@ -6,18 +6,19 @@
 #include <sstream>
 #include <string>
 
+#include "json_handler.hpp"
+
 class AccountHandler {
 public:
     explicit AccountHandler();
     virtual ~AccountHandler();
     bool check_if_card_info_is_valid(const std::string & card_info);
     bool verify_pin(const std::string & card_info, const std::string & pin_number);
+    std::string get_account_name(const std::string & card_info);
+    std::vector<std::string> get_account_num(const std::string & card_info);
 
 private:
-    std::map<std::string, std::string> access_tokens_per_card_;
-    std::map<std::string, int> db_card_account_;
-    nlohmann::json loaded_data_;
+    inline static nlohmann::json loaded_data_ = load_json_db();
 
     void init_account_handler();
-    nlohmann::json load_json_db();
 };
