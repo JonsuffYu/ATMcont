@@ -9,10 +9,18 @@ add_executable(ATMcount
     src/atm_controller.cpp
     src/banking_handler.cpp
 )
-
 target_include_directories(ATMcount PRIVATE
     include
 )
+
+add_executable(atm_tests
+    src/test_atm_controller.cpp
+    src/atm_controller.cpp
+    src/account_handler.cpp
+    src/banking_handler.cpp
+)
+target_include_directories(atm_tests PRIVATE include)
+
 
 file(COPY
     ${CMAKE_SOURCE_DIR}/local_db
