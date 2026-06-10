@@ -27,3 +27,15 @@ bool ATMController::check_valid_card() {
 bool ATMController::verify_pin(std::string & pin_number) {
     return account_handler_->verify_pin(card_info_, pin_number);
 }
+
+std::string ATMController::get_account_name() {
+    return account_handler_->get_account_name(card_info_);
+}
+std::vector<std::string> ATMController::get_account_num() {
+    return account_handler_->get_account_num(card_info_);
+}
+
+bool ATMController::deposit_money(int & money) {
+
+    return true;
+}

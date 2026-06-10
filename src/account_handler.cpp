@@ -6,36 +6,8 @@ AccountHandler::AccountHandler()
 AccountHandler::~AccountHandler()
 {}
 
-// void AccountHandler::init_account_handler() {
-//     load_json_db();
-// }
-
-nlohmann::json AccountHandler::load_json_db() {
-    try {
-        std::cout << "load 1" << std::endl;
-        std::ifstream file("local_db/card_account_db.json");
-        std::cout << "load 2" << std::endl;
-        if (!file) {
-            std::cerr << "Cannot find json file for DB" << std::endl;
-            return nlohmann::json();
-        }
-
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-
-        // nlohmann::json loaded_data_ = nlohmann::json::parse(buffer.str());
-        nlohmann::json loaded_data = nlohmann::json::parse(buffer.str());
-        return loaded_data;
-    } catch (const std::exception& e) {
-        std::cerr << "JSON error: " << e.what() << std::endl;
-        return nlohmann::json();
-    }
-}
-
 bool AccountHandler::check_if_card_info_is_valid(const std::string & card_info) {
-    nlohmann::json json_data = load_json_db();
-
-    if (!json_data.contains(card_info)) {
+    if (!loaded_data_.contains(card_info)) {
         std::cerr << "Failed to find certain card info: " << card_info << std::endl;
         return false;
     }
@@ -43,10 +15,21 @@ bool AccountHandler::check_if_card_info_is_valid(const std::string & card_info) 
 }
 
 bool AccountHandler::verify_pin(const std::string & card_info, const std::string & pin_number) {
-    nlohmann::json json_data = load_json_db();
-    std::string loaded_pin = json_data[card_info]["pin"].get<std::string>();
+    std::string loaded_pin = loaded_data_[card_info]["pin"].get<std::string>();
     if (loaded_pin != pin_number) {
         return false;
     }
     return true;
+}
+
+std::string AccountHandler::get_account_name(const std::string & card_info) {
+    return loaded_data_[card_info]["name"].get<std::string>();
+}
+
+std::vector<std::string> AccountHandler::get_account_num(const std::string & card_info) {
+    std::vector<std::string> accounts_per_name;
+    for (auto & [account_num, info] : loaded_data_[card_info]["accounts"].items()) {
+        accounts_per_name.push_back(account_num);
+    }
+    return accounts_per_name;
 }

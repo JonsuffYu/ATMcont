@@ -13,6 +13,9 @@ public:
 
     bool check_valid_card();
     bool verify_pin(std::string & pin_number);
+    std::string get_account_name();
+    std::vector<std::string> get_account_num();
+    bool deposit_money(int & money);
     void init_atm_controller(std::string & card_info);
     
 
@@ -21,6 +24,7 @@ private:
     uint8_t NUM_CARD_DIGIT = 4;
 
     std::shared_ptr<AccountHandler> account_handler_;
+    std::shared_ptr<BankingHandler> banking_handler_;
 
     void split_card_info_with_dash(std::string & card_info);
 };
